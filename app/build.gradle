@@ -30,4 +30,6 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     implementation "com.github.aartikov.Alligator:alligator:$rootProject.alligatorVersion"
     annotationProcessor "com.github.aartikov.Alligator:alligator-compiler:$rootProject.alligatorVersion"
+    implementation "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
 }

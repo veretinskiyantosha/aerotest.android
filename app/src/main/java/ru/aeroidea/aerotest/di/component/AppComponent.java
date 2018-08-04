@@ -19,4 +19,6 @@ public interface AppComponent {
     NavigationContextBinder getNavigationContextBinder();
 
     ScreenResolver getScreenResolver();
+
+    HomeComponent createHomeComponent();
 }

@@ -37,4 +37,5 @@ ext {
     espressoVersion = '3.0.2'
     daggerVersion = '2.16'
     alligatorVersion = '2.2.0'
+    butterknifeVersion = '8.8.1'
 }
