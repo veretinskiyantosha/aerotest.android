@@ -4,6 +4,7 @@ import android.content.Context;
 
 import dagger.Module;
 import dagger.Provides;
+import ru.aeroidea.aerotest.di.scope.AppScope;
 
 @Module
 public class AppModule {
@@ -13,6 +14,7 @@ public class AppModule {
         mContext = context;
     }
 
+    @AppScope
     @Provides
     Context provideContext() {
         return mContext;

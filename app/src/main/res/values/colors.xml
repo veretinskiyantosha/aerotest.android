@@ -7,4 +7,7 @@
     <color name="white">#ffffff</color>
     <color name="blue">#80c4f7</color>
     <color name="grey">#a1a1a1</color>
+    <color name="black">#0e0e0e</color>
+    <color name="medium_gray">#7d7d7d</color>
+    <color name="dark_grey">#4a4a4a</color>
 </resources>

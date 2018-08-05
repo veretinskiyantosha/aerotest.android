@@ -38,4 +38,8 @@ ext {
     daggerVersion = '2.16'
     alligatorVersion = '2.2.0'
     butterknifeVersion = '8.8.1'
+    rxandroidVersion = '2.0.2'
+    rxjavaVersion = '2.1.15'
+    retrofitVersion = '2.4.0'
+    picassoVersion = '2.71828'
 }
