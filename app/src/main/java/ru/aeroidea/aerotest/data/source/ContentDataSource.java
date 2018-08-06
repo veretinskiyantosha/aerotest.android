@@ -1,61 +1,26 @@
 package ru.aeroidea.aerotest.data.source;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import io.reactivex.Observable;
 import ru.aeroidea.aerotest.data.source.remote.ApiService;
-import ru.aeroidea.aerotest.data.source.remote.rest.BannerRest;
-import ru.aeroidea.aerotest.data.source.remote.rest.CollectionRest;
-import ru.aeroidea.aerotest.data.source.remote.rest.mapper.BannerMapper;
-import ru.aeroidea.aerotest.data.source.remote.rest.mapper.CollectionMapper;
-import ru.aeroidea.aerotest.domain.model.BannerModel;
-import ru.aeroidea.aerotest.domain.model.CollectionModel;
-import ru.aeroidea.aerotest.domain.repository.BannersRepository;
-import ru.aeroidea.aerotest.domain.repository.CollectionsRepository;
+import ru.aeroidea.aerotest.data.source.remote.rest.Content;
+import ru.aeroidea.aerotest.domain.repository.ContentRepository;
 
-public class ContentDataSource implements BannersRepository, CollectionsRepository {
+public class ContentDataSource implements ContentRepository {
     private ApiService mApiService;
-    private BannerMapper mBannerMapper;
-    private CollectionMapper mCollectionMapper;
 
-    private List<BannerRest> mCachedBanners;
-    private List<CollectionRest> mCachedCollections;
+    private Content mCachedContent;
 
-    public ContentDataSource(ApiService apiService, BannerMapper bannerMapper, CollectionMapper collectionMapper) {
+    public ContentDataSource(ApiService apiService) {
         mApiService = apiService;
-        mBannerMapper = bannerMapper;
-        mCollectionMapper = collectionMapper;
     }
 
     @Override
-    public Observable<List<BannerModel>> getBanners() {
-        if (mCachedBanners != null) {
-            return Observable.just(mBannerMapper.transformList(mCachedBanners));
+    public Observable<Content> getMainContent() {
+        if (mCachedContent != null) {
+            return Observable.just(mCachedContent);
         } else {
             return mApiService.getMainContent("ru")
-                    .doOnNext(contentRest ->
-                            refreshCache(contentRest.getBanners(), contentRest.getCollections())
-                    ).map(contentRest -> mBannerMapper.transformList(contentRest.getBanners()));
+                    .doOnNext(content -> mCachedContent = content);
         }
-    }
-
-    @Override
-    public Observable<List<CollectionModel>> getCollections() {
-        if (mCachedCollections != null) {
-            return Observable.just(mCollectionMapper.transformList(mCachedCollections));
-        } else {
-            return mApiService.getMainContent("ru")
-                    .doOnNext(contentRest ->
-                            refreshCache(contentRest.getBanners(), contentRest.getCollections())
-                    ).map(contentRest ->
-                            mCollectionMapper.transformList(contentRest.getCollections())
-                    );
-        }
-    }
-
-    private void refreshCache(List<BannerRest> banners, List<CollectionRest> collections) {
-        mCachedBanners = new LinkedList<>(banners);
-        mCachedCollections = new LinkedList<>(collections);
     }
 }

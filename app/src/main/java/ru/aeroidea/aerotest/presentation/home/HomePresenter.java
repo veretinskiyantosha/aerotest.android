@@ -2,20 +2,17 @@ package ru.aeroidea.aerotest.presentation.home;
 
 import ru.aeroidea.aerotest.App;
 import ru.aeroidea.aerotest.domain.usecase.CallbackWrapper;
-import ru.aeroidea.aerotest.domain.usecase.GetBannersUseCase;
-import ru.aeroidea.aerotest.domain.usecase.GetCollectionsUseCase;
+import ru.aeroidea.aerotest.domain.usecase.GetContentUseCase;
 import ru.aeroidea.aerotest.presentation.screens.DetailScreen;
 
 public class HomePresenter implements HomeContract.Presenter {
     private static final String TAG = HomePresenter.class.getName();
 
     private HomeContract.View mView;
-    private GetBannersUseCase mGetBannersUseCase;
-    private GetCollectionsUseCase mGetCollectionsUseCase;
+    private GetContentUseCase mGetContentUseCase;
 
-    public HomePresenter(GetBannersUseCase getBannersUseCase, GetCollectionsUseCase getCollectionsUseCase) {
-        mGetBannersUseCase = getBannersUseCase;
-        mGetCollectionsUseCase = getCollectionsUseCase;
+    public HomePresenter(GetContentUseCase contentUseCase) {
+        mGetContentUseCase = contentUseCase;
     }
 
     @Override
@@ -25,27 +22,25 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void unbind() {
+        mGetContentUseCase.dispose();
         mView = null;
     }
 
     @Override
-    public void loadBanners() {
-        mGetBannersUseCase.executeUseCase(new CallbackWrapper<GetBannersUseCase.ResponseValues>() {
+    public void loadContent() {
+        mView.setLoadingIndicator(true);
+        mGetContentUseCase.executeUseCase(new CallbackWrapper<GetContentUseCase.ResponseValues>() {
             @Override
-            public void onSuccess(GetBannersUseCase.ResponseValues responseValues) {
-                mView.showBanners(responseValues.getBanners());
+            public void onSuccess(GetContentUseCase.ResponseValues responseValues) {
+                mView.setLoadingIndicator(false);
+                mView.showContent(responseValues.getContent());
             }
-        }, new GetBannersUseCase.RequestValues());
-    }
 
-    @Override
-    public void loadCollections() {
-        mGetCollectionsUseCase.executeUseCase(new CallbackWrapper<GetCollectionsUseCase.ResponseValues>() {
             @Override
-            public void onSuccess(GetCollectionsUseCase.ResponseValues responseValues) {
-                mView.showCollections(responseValues.getCollections());
+            public void onError(Throwable e) {
+                mView.setLoadingIndicator(false);
             }
-        }, new GetCollectionsUseCase.RequestValues());
+        }, new GetContentUseCase.RequestValues());
     }
 
     @Override

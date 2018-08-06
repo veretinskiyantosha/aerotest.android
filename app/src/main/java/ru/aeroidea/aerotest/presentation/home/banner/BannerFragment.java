@@ -12,14 +12,15 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.aeroidea.aerotest.App;
 import ru.aeroidea.aerotest.R;
-import ru.aeroidea.aerotest.presentation.screens.DetailScreen;
 
-public class BannerFragment extends Fragment {
+public class BannerFragment extends Fragment implements BannerContract.View {
     private static final String ARG_TITLE = "title";
     private static final String ARG_BANNER_URL = "banner_url";
 
@@ -32,6 +33,9 @@ public class BannerFragment extends Fragment {
 
     private String mTitle;
     private String mBannerUrl;
+
+    @Inject
+    BannerContract.Presenter mPresenter;
 
     public static BannerFragment newInstance(String title, String bannerUrl) {
         Bundle args = new Bundle();
@@ -48,6 +52,8 @@ public class BannerFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        App.getComponent().createBannerComponent().injectBannerFragment(this);
+
         mTitle = getArguments().getString(ARG_TITLE);
         mBannerUrl = getArguments().getString(ARG_BANNER_URL);
     }
@@ -56,9 +62,7 @@ public class BannerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_banner, container, false);
-        view.setOnClickListener(v -> {
-            App.getComponent().getNavigator().goForward(new DetailScreen(mTitle));
-        });
+        view.setOnClickListener(v -> mPresenter.showDetail(mTitle));
 
         mUnbinder = ButterKnife.bind(this, view);
 
@@ -69,7 +73,14 @@ public class BannerFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.bind(this);
+    }
+
+    @Override
     public void onDestroy() {
+        mPresenter.unbind();
         mUnbinder.unbind();
         super.onDestroy();
     }

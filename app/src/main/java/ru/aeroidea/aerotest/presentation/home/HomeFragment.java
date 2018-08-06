@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -29,8 +30,9 @@ import butterknife.Unbinder;
 import me.aartikov.alligator.annotations.RegisterScreen;
 import ru.aeroidea.aerotest.App;
 import ru.aeroidea.aerotest.R;
-import ru.aeroidea.aerotest.domain.model.BannerModel;
-import ru.aeroidea.aerotest.domain.model.CollectionModel;
+import ru.aeroidea.aerotest.data.source.remote.rest.Banner;
+import ru.aeroidea.aerotest.data.source.remote.rest.Collection;
+import ru.aeroidea.aerotest.data.source.remote.rest.Content;
 import ru.aeroidea.aerotest.presentation.home.banner.BannerFragment;
 import ru.aeroidea.aerotest.presentation.screens.HomeScreen;
 
@@ -47,6 +49,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     ViewPager mBannersViewPager;
     @BindView(R.id.collections_recycler_view)
     RecyclerView mCollectionsRecyclerView;
+    @BindView(R.id.progress)
+    ProgressBar mProgress;
 
     private Unbinder mUnbinder;
     private CollectionAdapter mCollectionAdapter;
@@ -55,7 +59,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.getHomeComponent().injectHomeFragment(this);
+
+        App.getComponent().createHomeComponent().injectHomeFragment(this);
+
         mCollectionAdapter = new CollectionAdapter(new ArrayList<>(0), mPresenter::showDetail);
         mBannerAdapter = new BannerAdapter(getChildFragmentManager(), new ArrayList<>(0));
     }
@@ -83,8 +89,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     public void onResume() {
         super.onResume();
         mPresenter.bind(this);
-        mPresenter.loadBanners();
-        mPresenter.loadCollections();
+        mPresenter.loadContent();
     }
 
     @Override
@@ -95,29 +100,32 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     }
 
     @Override
-    public void showBanners(List<BannerModel> banners) {
-        mBannerAdapter.setBanners(banners);
+    public void setLoadingIndicator(boolean active) {
+        if (active) {
+            mProgress.setVisibility(View.VISIBLE);
+        } else {
+            mProgress.setVisibility(View.GONE);
+        }
     }
 
     @Override
-    public void showCollections(List<CollectionModel> collections) {
-        mCollectionAdapter.setCollections(collections);
+    public void showContent(Content content) {
+        mBannerAdapter.setBanners(content.getBanners());
+        mCollectionAdapter.setCollections(content.getCollections());
     }
 
-
     private static class BannerAdapter extends FragmentStatePagerAdapter {
-        private List<BannerModel> mBanners;
+        private List<Banner> mBanners;
 
-        public BannerAdapter(FragmentManager fm, List<BannerModel> banners) {
+        public BannerAdapter(FragmentManager fm, List<Banner> banners) {
             super(fm);
             mBanners = banners;
         }
 
         @Override
         public Fragment getItem(int i) {
-            BannerModel banner = mBanners.get(i);
-
-            return BannerFragment.newInstance(banner.getTitle(), banner.getPictureUrl());
+            Banner banner = mBanners.get(i);
+            return BannerFragment.newInstance(banner.getTitle(), banner.getMobilePicture());
         }
 
         @Override
@@ -125,7 +133,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             return mBanners.size();
         }
 
-        public void setBanners(List<BannerModel> banners) {
+        public void setBanners(List<Banner> banners) {
             mBanners = banners;
             notifyDataSetChanged();
         }
@@ -151,8 +159,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             }
         }
 
-        public void bindCollection(CollectionModel collection) {
-            Picasso.get().load(collection.getImgUrl()).into(mImageView);
+        public void bindCollection(Collection collection) {
+            Picasso.get().load(collection.getImg()).into(mImageView);
             mNameTextView.setText(collection.getName());
 
             String text = collection.getProductsCount() + " " + mProductsCaption;
@@ -161,10 +169,10 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     }
 
     public static class CollectionAdapter extends RecyclerView.Adapter<CollectionHolder> {
-        private List<CollectionModel> mCollections;
+        private List<Collection> mCollections;
         private ItemListener mItemListener;
 
-        public CollectionAdapter(List<CollectionModel> collections, ItemListener itemListener) {
+        public CollectionAdapter(List<Collection> collections, ItemListener itemListener) {
             mCollections = collections;
             mItemListener = itemListener;
         }
@@ -175,14 +183,15 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
             View view = layoutInflater.inflate(R.layout.collection_list_item, viewGroup, false);
 
-            final CollectionModel collection = mCollections.get(i);
-            view.setOnClickListener(v -> mItemListener.onItemClick(collection.getName()));
-
             return new CollectionHolder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull CollectionHolder collectionHolder, int i) {
+            collectionHolder.itemView.setOnClickListener(v -> {
+                mItemListener.onItemClick(mCollections.get(i).getName());
+            });
+
             collectionHolder.bindCollection(mCollections.get(i));
         }
 
@@ -191,7 +200,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             return mCollections.size();
         }
 
-        public void setCollections(List<CollectionModel> collections) {
+        public void setCollections(List<Collection> collections) {
             mCollections = collections;
             notifyDataSetChanged();
         }

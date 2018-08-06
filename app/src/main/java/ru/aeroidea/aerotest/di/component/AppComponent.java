@@ -7,11 +7,12 @@ import me.aartikov.alligator.ScreenResolver;
 import me.aartikov.alligator.navigationfactories.NavigationFactory;
 import ru.aeroidea.aerotest.di.module.ApiModule;
 import ru.aeroidea.aerotest.di.module.AppModule;
+import ru.aeroidea.aerotest.di.module.ContentModule;
 import ru.aeroidea.aerotest.di.module.NavigationModule;
 import ru.aeroidea.aerotest.di.scope.AppScope;
 
 @AppScope
-@Component(modules = {AppModule.class, NavigationModule.class, ApiModule.class})
+@Component(modules = {AppModule.class, NavigationModule.class, ApiModule.class, ContentModule.class})
 public interface AppComponent {
     NavigationFactory getNavigationFactory();
 
@@ -22,4 +23,6 @@ public interface AppComponent {
     ScreenResolver getScreenResolver();
 
     HomeComponent createHomeComponent();
+
+    BannerComponent createBannerComponent();
 }
