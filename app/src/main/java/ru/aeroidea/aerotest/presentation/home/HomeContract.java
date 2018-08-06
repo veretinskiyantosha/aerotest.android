@@ -20,8 +20,6 @@ public interface HomeContract {
 
         void loadCollections();
 
-        void showBannerDetail(String title);
-
-        void showCollectionDetail(String title);
+        void showDetail(String title);
     }
 }

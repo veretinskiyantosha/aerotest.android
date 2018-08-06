@@ -63,4 +63,7 @@ dependencies {
 
     // upload images
     implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+
+    // page indicator
+    implementation "com.romandanylyk:pageindicatorview:$rootProject.pageIndicatorView"
 }

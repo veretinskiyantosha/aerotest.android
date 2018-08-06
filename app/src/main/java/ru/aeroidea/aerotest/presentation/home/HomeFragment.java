@@ -56,7 +56,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getHomeComponent().injectHomeFragment(this);
-        mCollectionAdapter = new CollectionAdapter(new ArrayList<>(0));
+        mCollectionAdapter = new CollectionAdapter(new ArrayList<>(0), mPresenter::showDetail);
         mBannerAdapter = new BannerAdapter(getChildFragmentManager(), new ArrayList<>(0));
     }
 
@@ -162,9 +162,11 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     public static class CollectionAdapter extends RecyclerView.Adapter<CollectionHolder> {
         private List<CollectionModel> mCollections;
+        private ItemListener mItemListener;
 
-        public CollectionAdapter(List<CollectionModel> collections) {
+        public CollectionAdapter(List<CollectionModel> collections, ItemListener itemListener) {
             mCollections = collections;
+            mItemListener = itemListener;
         }
 
         @NonNull
@@ -172,6 +174,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         public CollectionHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
             View view = layoutInflater.inflate(R.layout.collection_list_item, viewGroup, false);
+
+            final CollectionModel collection = mCollections.get(i);
+            view.setOnClickListener(v -> mItemListener.onItemClick(collection.getName()));
 
             return new CollectionHolder(view);
         }
@@ -190,5 +195,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             mCollections = collections;
             notifyDataSetChanged();
         }
+    }
+
+    public interface ItemListener {
+        void onItemClick(String title);
     }
 }

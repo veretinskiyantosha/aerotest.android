@@ -15,7 +15,9 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.aeroidea.aerotest.App;
 import ru.aeroidea.aerotest.R;
+import ru.aeroidea.aerotest.presentation.screens.DetailScreen;
 
 public class BannerFragment extends Fragment {
     private static final String ARG_TITLE = "title";
@@ -54,6 +56,9 @@ public class BannerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_banner, container, false);
+        view.setOnClickListener(v -> {
+            App.getComponent().getNavigator().goForward(new DetailScreen(mTitle));
+        });
 
         mUnbinder = ButterKnife.bind(this, view);
 

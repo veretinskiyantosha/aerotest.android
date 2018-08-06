@@ -24,7 +24,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"/>
+                app:layout_collapseMode="pin"
+                app:theme="@style/ThemeOverlay.AppCompat.Light"/>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -44,6 +45,21 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
+
+            <com.rd.PageIndicatorView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:layout_constraintBottom_toBottomOf="@+id/banners_view_pager"
+                app:layout_constraintEnd_toEndOf="@+id/banners_view_pager"
+                app:layout_constraintStart_toStartOf="@+id/banners_view_pager"
+                app:piv_animationType="none"
+                app:piv_dynamicCount="true"
+                app:piv_padding="5dp"
+                app:piv_radius="5dp"
+                app:piv_selectedColor="@color/blue"
+                app:piv_unselectedColor="@color/grey"
+                app:piv_viewPager="@+id/banners_view_pager"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/collections_recycler_view"

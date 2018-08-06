@@ -1,8 +1,10 @@
 package ru.aeroidea.aerotest.presentation.home;
 
+import ru.aeroidea.aerotest.App;
 import ru.aeroidea.aerotest.domain.usecase.CallbackWrapper;
 import ru.aeroidea.aerotest.domain.usecase.GetBannersUseCase;
 import ru.aeroidea.aerotest.domain.usecase.GetCollectionsUseCase;
+import ru.aeroidea.aerotest.presentation.screens.DetailScreen;
 
 public class HomePresenter implements HomeContract.Presenter {
     private static final String TAG = HomePresenter.class.getName();
@@ -47,12 +49,7 @@ public class HomePresenter implements HomeContract.Presenter {
     }
 
     @Override
-    public void showBannerDetail(String title) {
-
-    }
-
-    @Override
-    public void showCollectionDetail(String title) {
-
+    public void showDetail(String title) {
+        App.getComponent().getNavigator().goForward(new DetailScreen(title));
     }
 }
